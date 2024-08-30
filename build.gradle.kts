@@ -22,7 +22,7 @@ val modId: String = "castirongrill"
 base {
     archivesName.set("CastIronGrill-$minecraftVersion")
     group = "com.hermitowo.castirongrill"
-    version = "2.2"
+    version = "2.3"
 }
 
 java {
