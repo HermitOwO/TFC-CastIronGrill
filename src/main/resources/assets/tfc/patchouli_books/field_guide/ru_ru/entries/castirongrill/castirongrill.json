@@ -1,0 +1,36 @@
+{
+  "name": "Гриль из серого чугуна",
+  "category": "tfc:castirongrill",
+  "icon": "castirongrill:cast_iron_grill",
+  "pages": [
+    {
+      "type": "patchouli:text",
+      "text": "$(thing)Гриль из серого чугуна$() - это чугунная версия $(l:tfc:mechanics/grill)Гриля из кованого железа$().$(br2)Его единственное отличие в том, что $(thing)Гриль из серого чугуна$() может готовить только $(item)два$() предмета одновременно вместо пяти."
+    },
+    {
+      "type": "patchouli:multiblock",
+      "multiblock": {
+        "pattern": [
+          [
+            "X"
+          ],
+          [
+            "0"
+          ]
+        ],
+        "mapping": {
+          "X": "castirongrill:cast_iron_grill_firepit"
+        }
+      },
+      "name": "Гриль из серого чугуна",
+      "text": "",
+      "enable_visualize": false
+    }
+  ],
+  "read_by_default": true,
+  "sortnum": 1,
+  "extra_recipe_mappings": {
+    "castirongrill:cast_iron_grill": 0,
+    "castirongrill:cast_iron_grill_firepit": 0
+  }
+}

@@ -1,5 +1,8 @@
 {
   "item.castirongrill.cast_iron_grill": "Гриль из серого чугуна",
-  "block.castirongrill.cast_iron_grill_firepit": "Чугунный гриль на костре",
-  "castirongrill.block_entity.cast_iron_grill": "Чугунный гриль на костре"
+  "block.castirongrill.cast_iron_grill_firepit": "Гриль из серого чугуна на костре",
+  "block.castirongrill.stovetop_cast_iron_grill": "Гриль из серого чугуна на плите",
+  "castirongrill.block_entity.cast_iron_grill": "Гриль из серого чугуна на костре",
+  "castirongrill.block_entity.stovetop_cast_iron_grill": "Гриль из серого чугуна на плите",
+  "castirongrill.creative_tab.main": "TFC Cast Iron Grill"
 }
