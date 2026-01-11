@@ -5,9 +5,8 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 
 import net.dries007.tfc.common.TFCTags;
-import net.dries007.tfc.common.capabilities.Capabilities;
 import net.dries007.tfc.common.container.BlockEntityContainer;
-import net.dries007.tfc.common.container.CallbackSlot;
+import net.dries007.tfc.common.container.slot.CallbackSlot;
 import net.dries007.tfc.util.Helpers;
 
 import static com.hermitowo.castirongrill.common.blockentities.CastIronGrillBlockEntity.*;
@@ -49,16 +48,13 @@ public class CastIronGrillContainer extends BlockEntityContainer<CastIronGrillBl
     @Override
     protected void addContainerSlots()
     {
-        blockEntity.getCapability(Capabilities.ITEM).ifPresent(handler ->
+        for (int i = 0; i < 4; i++) // Fuel
         {
-            for (int i = 0; i < 4; i++) // Fuel
-            {
-                addSlot(new CallbackSlot(blockEntity, handler, i, 8, 70 - 18 * i));
-            }
-            for (int i = SLOT_EXTRA_INPUT_START; i <= SLOT_EXTRA_INPUT_END; i++) // Grill input
-            {
-                addSlot(new CallbackSlot(blockEntity, handler, i, 62 + (i - SLOT_EXTRA_INPUT_START) * 18, 20));
-            }
-        });
+            addSlot(new CallbackSlot(blockEntity, i, 8, 70 - 18 * i));
+        }
+        for (int i = SLOT_EXTRA_INPUT_START; i <= SLOT_EXTRA_INPUT_END; i++) // Grill input
+        {
+            addSlot(new CallbackSlot(blockEntity, i, 62 + (i - SLOT_EXTRA_INPUT_START) * 18, 20));
+        }
     }
 }

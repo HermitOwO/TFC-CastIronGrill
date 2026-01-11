@@ -8,22 +8,19 @@ import com.hermitowo.castirongrill.common.blockentities.CIGBlockEntities;
 import com.hermitowo.castirongrill.common.blocks.CIGBlocks;
 import com.hermitowo.castirongrill.common.compat.FirmalifeCompat;
 import com.hermitowo.castirongrill.common.container.CIGContainerTypes;
-import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.RenderType;
-import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
+import net.neoforged.neoforge.client.event.EntityRenderersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 
 public class CIGClientEvents
 {
-    public static void init()
+    public static void init(IEventBus bus)
     {
-        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-
         bus.addListener(CIGClientEvents::clientSetup);
+        bus.addListener(CIGClientEvents::registerMenuScreens);
         bus.addListener(CIGClientEvents::registerEntityRenderers);
     }
 
@@ -31,24 +28,30 @@ public class CIGClientEvents
     public static void clientSetup(FMLClientSetupEvent event)
     {
         event.enqueueWork(() -> {
-            MenuScreens.register(CIGContainerTypes.CAST_IRON_GRILL.get(), CastIronGrillScreen::new);
-
-            // Should specify in block model json instead but be consistent with TFC for now
             ItemBlockRenderTypes.setRenderLayer(CIGBlocks.CAST_IRON_GRILL_FIREPIT.get(), RenderType.cutout());
 
-            if (ModList.get().isLoaded("firmalife"))
+            if (FirmalifeCompat.isModLoaded())
             {
-                MenuScreens.register(FirmalifeCompat.getStovetopCastIronGrillContainer().get(), StovetopCastIronGrillScreen::new);
                 ItemBlockRenderTypes.setRenderLayer(FirmalifeCompat.getStovetopCastIronGrillBlock().get(), RenderType.cutout());
             }
         });
+    }
+
+    public static void registerMenuScreens(RegisterMenuScreensEvent event)
+    {
+        event.register(CIGContainerTypes.CAST_IRON_GRILL.get(), CastIronGrillScreen::new);
+
+        if (FirmalifeCompat.isModLoaded())
+        {
+            event.register(FirmalifeCompat.getStovetopCastIronGrillContainer().get(), StovetopCastIronGrillScreen::new);
+        }
     }
 
     public static void registerEntityRenderers(EntityRenderersEvent.RegisterRenderers event)
     {
         event.registerBlockEntityRenderer(CIGBlockEntities.CAST_IRON_GRILL.get(), ctx -> new CastIronGrillBlockEntityRenderer());
 
-        if (ModList.get().isLoaded("firmalife"))
+        if (FirmalifeCompat.isModLoaded())
         {
             event.registerBlockEntityRenderer(FirmalifeCompat.getStovetopCastIronGrillBlockEntity().get(), ctx -> new StovetopCastIronGrillBlockEntityRenderer());
         }

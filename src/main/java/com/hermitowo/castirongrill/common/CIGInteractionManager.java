@@ -1,6 +1,6 @@
 package com.hermitowo.castirongrill.common;
 
-import com.eerussianguy.firmalife.common.blocks.OvenBottomBlock;
+import com.eerussianguy.firmalife.common.blocks.oven.OvenBottomBlock;
 import com.hermitowo.castirongrill.common.compat.FirmalifeCompat;
 import com.hermitowo.castirongrill.common.items.CIGItems;
 import net.minecraft.core.BlockPos;
@@ -15,7 +15,7 @@ public class CIGInteractionManager
 {
     public static void init()
     {
-        InteractionManager.register(Ingredient.of(CIGItems.CAST_IRON_GRILL.get()), false, (stack, context) -> {
+        InteractionManager.register(Ingredient.of(CIGItems.CAST_IRON_GRILL), InteractionManager.Target.BLOCKS, (stack, context) -> {
             final Level level = context.getLevel();
             final BlockPos pos = context.getClickedPos();
             final BlockPos abovePos = pos.above();

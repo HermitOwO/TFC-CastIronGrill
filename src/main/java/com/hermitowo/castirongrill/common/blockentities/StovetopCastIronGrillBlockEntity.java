@@ -1,14 +1,13 @@
 package com.hermitowo.castirongrill.common.blockentities;
 
+import com.eerussianguy.firmalife.common.FLHelpers;
 import com.eerussianguy.firmalife.common.blockentities.ApplianceBlockEntity;
-import com.hermitowo.castirongrill.CastIronGrill;
 import com.hermitowo.castirongrill.common.compat.FirmalifeCompatBouncer;
 import com.hermitowo.castirongrill.common.container.StovetopCastIronGrillContainer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.item.ItemStack;
@@ -18,14 +17,13 @@ import org.jetbrains.annotations.Nullable;
 
 import net.dries007.tfc.common.blockentities.InventoryBlockEntity;
 import net.dries007.tfc.common.capabilities.PartialItemHandler;
-import net.dries007.tfc.common.capabilities.food.FoodCapability;
-import net.dries007.tfc.common.capabilities.food.FoodTraits;
-import net.dries007.tfc.common.capabilities.heat.HeatCapability;
+import net.dries007.tfc.common.component.food.FoodCapability;
+import net.dries007.tfc.common.component.food.FoodTraits;
+import net.dries007.tfc.common.component.heat.HeatCapability;
+import net.dries007.tfc.common.component.heat.IHeat;
 import net.dries007.tfc.common.recipes.HeatingRecipe;
-import net.dries007.tfc.common.recipes.inventory.ItemStackInventory;
-import net.dries007.tfc.util.Helpers;
 
-public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<StovetopCastIronGrillBlockEntity.GrillInventory>
+public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<StovetopCastIronGrillBlockEntity.Inventory>
 {
     @SuppressWarnings("unused")
     public static void serverTick(Level level, BlockPos pos, BlockState state, StovetopCastIronGrillBlockEntity grill)
@@ -44,14 +42,12 @@ public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<Stove
 
     public static final int SLOTS = 2;
 
-    private static final Component NAME = Component.translatable(CastIronGrill.MOD_ID + ".block_entity.stovetop_cast_iron_grill");
-
     private final HeatingRecipe[] cachedRecipes;
     private boolean needsRecipeUpdate = true;
 
     public StovetopCastIronGrillBlockEntity(BlockPos pos, BlockState state)
     {
-        super(FirmalifeCompatBouncer.BlockEntities.STOVETOP_CAST_IRON_GRILL.get(), pos, state, GrillInventory::new, NAME);
+        super(FirmalifeCompatBouncer.BlockEntities.STOVETOP_CAST_IRON_GRILL.get(), pos, state, Inventory::new, FLHelpers.blockEntityName("stovetop_cast_iron_grill"));
 
         sidedInventory
             .on(new PartialItemHandler(inventory).insert(0, 1), Direction.UP)
@@ -61,7 +57,7 @@ public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<Stove
 
     @Nullable
     @Override
-    public AbstractContainerMenu createMenu(int containerId, Inventory inventory, Player player)
+    public AbstractContainerMenu createMenu(int containerId, net.minecraft.world.entity.player.Inventory inventory, Player player)
     {
         return StovetopCastIronGrillContainer.create(this, inventory, containerId);
     }
@@ -75,13 +71,13 @@ public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<Stove
     @Override
     public boolean isItemValid(int slot, ItemStack stack)
     {
-        return Helpers.mightHaveCapability(stack, HeatCapability.CAPABILITY);
+        return HeatCapability.get(stack) != null;
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt)
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider access)
     {
-        super.loadAdditional(nbt);
+        super.loadAdditional(nbt, access);
         needsRecipeUpdate = true;
     }
 
@@ -98,18 +94,20 @@ public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<Stove
         for (int slot = 0; slot < SLOTS; slot++)
         {
             final ItemStack inputStack = inventory.getStackInSlot(slot);
-            final int finalSlot = slot;
-            inputStack.getCapability(HeatCapability.CAPABILITY, null).ifPresent(cap -> {
+            final IHeat cap = HeatCapability.get(inputStack);
+            if (cap != null)
+            {
                 HeatCapability.addTemp(cap, temperature);
-                final HeatingRecipe recipe = cachedRecipes[finalSlot];
+                final HeatingRecipe recipe = cachedRecipes[slot];
                 if (recipe != null && recipe.isValidTemperature(cap.getTemperature()))
                 {
-                    ItemStack output = recipe.assemble(new ItemStackInventory(inputStack), level.registryAccess());
+                    ItemStack output = recipe.assembleItem(inputStack);
                     FoodCapability.applyTrait(output, FoodTraits.WOOD_GRILLED);
-                    inventory.setStackInSlot(finalSlot, output);
+                    FLHelpers.roundCreationDate(output);
+                    inventory.setStackInSlot(slot, output);
                     markForSync();
                 }
-            });
+            }
         }
     }
 
@@ -119,13 +117,13 @@ public class StovetopCastIronGrillBlockEntity extends ApplianceBlockEntity<Stove
         for (int slot = 0; slot < SLOTS; slot++)
         {
             final ItemStack stack = inventory.getStackInSlot(slot);
-            cachedRecipes[slot] = stack.isEmpty() ? null : HeatingRecipe.getRecipe(new ItemStackInventory(stack));
+            cachedRecipes[slot] = stack.isEmpty() ? null : HeatingRecipe.getRecipe(stack);
         }
     }
 
-    public static class GrillInventory extends ApplianceBlockEntity.ApplianceInventory
+    public static class Inventory extends ApplianceBlockEntity.ApplianceInventory
     {
-        public GrillInventory(InventoryBlockEntity<?> entity)
+        public Inventory(InventoryBlockEntity<?> entity)
         {
             super(entity, SLOTS);
         }

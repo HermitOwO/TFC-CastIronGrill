@@ -6,18 +6,18 @@ import com.hermitowo.castirongrill.common.CIGCreativeTabs;
 import com.hermitowo.castirongrill.common.CIGInteractionManager;
 import com.hermitowo.castirongrill.common.blockentities.CIGBlockEntities;
 import com.hermitowo.castirongrill.common.blocks.CIGBlocks;
+import com.hermitowo.castirongrill.common.capabilities.CIGComponents;
+import com.hermitowo.castirongrill.common.compat.FirmalifeCompat;
 import com.hermitowo.castirongrill.common.compat.FirmalifeCompatBouncer;
 import com.hermitowo.castirongrill.common.container.CIGContainerTypes;
 import com.hermitowo.castirongrill.common.items.CIGItems;
 import com.mojang.logging.LogUtils;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.api.distmarker.Dist;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
+import net.neoforged.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 
 @Mod(CastIronGrill.MOD_ID)
@@ -26,21 +26,21 @@ public class CastIronGrill
     public static final String MOD_ID = "castirongrill";
     public static final Logger LOGGER = LogUtils.getLogger();
 
-    public CastIronGrill()
+    public CastIronGrill(IEventBus bus)
     {
-        final IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-
-        bus.addListener(this::setup);
-
         CIGBlocks.BLOCKS.register(bus);
         CIGItems.ITEMS.register(bus);
         CIGBlockEntities.BLOCK_ENTITIES.register(bus);
         CIGContainerTypes.CONTAINERS.register(bus);
         CIGCreativeTabs.CREATIVE_TABS.register(bus);
+        CIGComponents.COMPONENT.register(bus);
+
+        bus.addListener(this::setup);
+        bus.addListener(CIGComponents::register);
 
         CIGForgeEvents.init();
 
-        if (ModList.get().isLoaded("firmalife"))
+        if (FirmalifeCompat.isModLoaded())
         {
             FirmalifeCompatBouncer.Blocks.init();
             FirmalifeCompatBouncer.BlockEntities.init();
@@ -49,7 +49,7 @@ public class CastIronGrill
 
         if (FMLEnvironment.dist == Dist.CLIENT)
         {
-            CIGClientEvents.init();
+            CIGClientEvents.init(bus);
             CIGClientForgeEvents.init();
         }
     }
@@ -57,7 +57,7 @@ public class CastIronGrill
     public void setup(FMLCommonSetupEvent event)
     {
         event.enqueueWork(() -> {
-            if (ModList.get().isLoaded("firmalife"))
+            if (FirmalifeCompat.isModLoaded())
             {
                 CIGInteractionManager.init();
             }
@@ -66,6 +66,6 @@ public class CastIronGrill
 
     public static ResourceLocation rl(String name)
     {
-        return new ResourceLocation(MOD_ID, name);
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
     }
 }

@@ -11,8 +11,6 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
 
-import net.dries007.tfc.common.capabilities.Capabilities;
-
 public class StovetopCastIronGrillBlockEntityRenderer implements BlockEntityRenderer<StovetopCastIronGrillBlockEntity>
 {
     @Override
@@ -20,22 +18,21 @@ public class StovetopCastIronGrillBlockEntityRenderer implements BlockEntityRend
     {
         if (grill.getLevel() == null)
             return;
-        grill.getCapability(Capabilities.ITEM).ifPresent((cap) -> {
-            for (int i = 0; i < StovetopCastIronGrillBlockEntity.SLOTS; ++i)
+        final var cap = grill.getInventory();
+        for (int i = 0; i < StovetopCastIronGrillBlockEntity.SLOTS; ++i)
+        {
+            ItemStack item = cap.getStackInSlot(i);
+            if (!item.isEmpty())
             {
-                ItemStack item = cap.getStackInSlot(i);
-                if (!item.isEmpty())
-                {
-                    poseStack.pushPose();
-                    final Vec3 pos = StovetopCastIronGrillBlock.SLOT_CENTERS.get(i);
-                    poseStack.translate(pos.x, 0.003125 + 1f / 16, pos.z);
-                    poseStack.scale(0.3F, 0.3F, 0.3F);
-                    poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
-                    poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
-                    Minecraft.getInstance().getItemRenderer().renderStatic(item, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, buffer, grill.getLevel(), 0);
-                    poseStack.popPose();
-                }
+                poseStack.pushPose();
+                final Vec3 pos = StovetopCastIronGrillBlock.SLOT_CENTERS.get(i);
+                poseStack.translate(pos.x, 0.003125 + 1f / 16, pos.z);
+                poseStack.scale(0.3F, 0.3F, 0.3F);
+                poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(180.0F));
+                Minecraft.getInstance().getItemRenderer().renderStatic(item, ItemDisplayContext.FIXED, combinedLight, combinedOverlay, poseStack, buffer, grill.getLevel(), 0);
+                poseStack.popPose();
             }
-        });
+        }
     }
 }

@@ -4,7 +4,7 @@
     "item": "castirongrill:cast_iron_grill"
   },
   "result_fluid": {
-    "fluid": "tfc:metal/cast_iron",
+    "id": "tfc:metal/cast_iron",
     "amount": 400
   },
   "temperature": 1535

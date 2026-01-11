@@ -2,34 +2,31 @@ package com.hermitowo.castirongrill.common.compat;
 
 import com.hermitowo.castirongrill.common.blockentities.StovetopCastIronGrillBlockEntity;
 import com.hermitowo.castirongrill.common.container.StovetopCastIronGrillContainer;
-import javax.annotation.Nullable;
-import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.minecraftforge.fml.ModList;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.fml.ModList;
+
+import net.dries007.tfc.common.blockentities.TFCBlockEntities;
+import net.dries007.tfc.common.blocks.TFCBlocks;
+import net.dries007.tfc.common.container.TFCContainerTypes;
 
 public class FirmalifeCompat
 {
-    @Nullable
-    public static RegistryObject<Block> getStovetopCastIronGrillBlock()
+    public static TFCBlocks.Id<Block> getStovetopCastIronGrillBlock()
     {
-        return isModLoaded() ? FirmalifeCompatBouncer.Blocks.STOVETOP_CAST_IRON_GRILL : null;
+        return FirmalifeCompatBouncer.Blocks.STOVETOP_CAST_IRON_GRILL;
     }
 
-    @Nullable
-    public static RegistryObject<BlockEntityType<StovetopCastIronGrillBlockEntity>> getStovetopCastIronGrillBlockEntity()
+    public static TFCBlockEntities.Id<StovetopCastIronGrillBlockEntity> getStovetopCastIronGrillBlockEntity()
     {
-        return isModLoaded() ? FirmalifeCompatBouncer.BlockEntities.STOVETOP_CAST_IRON_GRILL : null;
+        return FirmalifeCompatBouncer.BlockEntities.STOVETOP_CAST_IRON_GRILL;
     }
 
-    @Nullable
-    public static RegistryObject<MenuType<StovetopCastIronGrillContainer>> getStovetopCastIronGrillContainer()
+    public static TFCContainerTypes.Id<StovetopCastIronGrillContainer> getStovetopCastIronGrillContainer()
     {
-        return isModLoaded() ? FirmalifeCompatBouncer.ContainerTypes.STOVETOP_CAST_IRON_GRILL : null;
+        return FirmalifeCompatBouncer.ContainerTypes.STOVETOP_CAST_IRON_GRILL;
     }
 
-    private static boolean isModLoaded()
+    public static boolean isModLoaded()
     {
         return ModList.get().isLoaded("firmalife");
     }
